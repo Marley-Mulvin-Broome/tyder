@@ -303,6 +303,14 @@ describe("Valid Cases", () => {
             columnNumber: 0,
           }
         ]],
+        ["Escaped Quotes in String", '"\\"Hello\\""', [
+          {
+            type: TydTokenType.String,
+            value: '"Hello"',
+            lineNumber: 0,
+            columnNumber: 0,
+          }
+        ]],
       ];
 
       runLexerTestData(stringTestData);
