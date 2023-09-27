@@ -1,0 +1,30 @@
+{
+  "name": "tyder",
+  "version": "0.0.1",
+  "description": "Parse tyd files in JavaScript",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "npx node --loader tsx --test tests/*test.ts",
+    "lint": "npx prettier --write 'src/**/*.ts' && eslint --fix --ext .ts src",
+    "build": "tsc"
+  },
+  "keywords": [
+    "tyd",
+    "software",
+    "inc"
+  ],
+  "author": "Marley Mulvin Broome",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2"
+  }
+}

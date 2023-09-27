@@ -1,0 +1,15 @@
+export enum TydTokenType {
+  Identifier = "Identifier",
+  AttributeIdentifier = "AttributeIdentifier",
+  String = "String",
+  Number = "Number",
+  OpenBrace = "OpenBrace",
+  CloseBrace = "CloseBrace",
+  OpenSquareBracket = "OpenSquareBracket",
+  CloseSquareBracket = "CloseSquareBracket",
+  Attribute = "Attribute",
+  Comment = "Comment",
+  StatementTerminator = "StatementTerminator",
+  Null = "null",
+  EOF = "EOF",
+}
