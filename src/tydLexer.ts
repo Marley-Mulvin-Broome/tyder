@@ -1,11 +1,15 @@
-import type {TydToken} from "./types/tydToken";
+import type { TydToken } from "./types/tydToken";
 import { ITydLexer } from "./types/tydLexer";
-import {TydTokenType} from "./types/tydTokenType";
+import { TydTokenType } from "./types/tydTokenType";
 import LexerError from "./lexerError";
+
+/**
+ * TODO: Lex verticle strings
+ */
 
 const EOF = "EOF";
 const RECORD_REGEX = /[a-zA-Z0-9_]/;
-const SPECIAL_STARTING_CHARS = ['-', '*', '\\'];
+const SPECIAL_STARTING_CHARS = ["-", "*", "\\"];
 
 const escapeCharacter = (string: string): string => {
   switch (string) {
@@ -53,7 +57,7 @@ export default class TydLexer implements ITydLexer {
     let escaped = false;
 
     while (nextCharacter !== EOF) {
-      if (! (predicate(nextCharacter) || escaped)) {
+      if (!(predicate(nextCharacter) || escaped)) {
         this.#rewind();
         break;
       }
@@ -62,14 +66,13 @@ export default class TydLexer implements ITydLexer {
         result += escapeCharacter(nextCharacter);
         escaped = false;
         nextCharacter = this.#stepForward();
-      } else if (nextCharacter === '\\') {
+      } else if (nextCharacter === "\\") {
         nextCharacter = this.#stepForward();
         escaped = true;
       } else {
         result += nextCharacter;
         nextCharacter = this.#stepForward();
       }
-
     }
 
     return result;
@@ -118,16 +121,18 @@ export default class TydLexer implements ITydLexer {
   }
 
   #createRecordToken(startingCharacter: string): TydToken {
-    const value = startingCharacter + this.#readUntil((character) => {
-      return RECORD_REGEX.test(character) || character === '.';
-    });
+    const value =
+      startingCharacter +
+      this.#readUntil((character) => {
+        return RECORD_REGEX.test(character) || character === ".";
+      });
 
     // check if is solely a number (optional decimal point)
     if (/^-?\d+.?\d*?$/.test(value)) {
       return this.#createToken(TydTokenType.Number, value);
-    } else if (value === 'null') {
+    } else if (value === "null") {
       return this.#createToken(TydTokenType.Null, value);
-    } else if (value.startsWith('*')) {
+    } else if (value.startsWith("*")) {
       return this.#createToken(TydTokenType.AttributeIdentifier, value);
     }
 
@@ -158,10 +163,10 @@ export default class TydLexer implements ITydLexer {
       );
     case "#":
       const value =
-            "#" +
-            this.#readUntil(
-              (character) => character !== "\n" && character !== ";",
-            );
+          "#" +
+          this.#readUntil(
+            (character) => character !== "\n" && character !== ";",
+          );
 
       return this.#createToken(TydTokenType.Comment, value);
     case '"':
@@ -174,7 +179,10 @@ export default class TydLexer implements ITydLexer {
       this.#skipWhitespace();
       return this.getNextToken();
     default:
-      if (RECORD_REGEX.test(nextCharacter) || SPECIAL_STARTING_CHARS.includes(nextCharacter)) {
+      if (
+        RECORD_REGEX.test(nextCharacter) ||
+          SPECIAL_STARTING_CHARS.includes(nextCharacter)
+      ) {
         return this.#createRecordToken(nextCharacter);
       }
 

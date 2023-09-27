@@ -1,4 +1,4 @@
-import {TydToken} from "./tydToken";
+import { TydToken } from "./tydToken";
 
 export interface ITydLexer {
   getNextToken(): TydToken;
