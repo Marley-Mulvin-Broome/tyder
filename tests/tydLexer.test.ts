@@ -142,6 +142,25 @@ describe("Valid Cases", () => {
     });
 
     describe("Statement Terminator", () => {
+      const statementTerminatorTestData: TydTokenTestData = [
+        ["Semi-colon", ";", [
+          {
+            type: TydTokenType.StatementTerminator,
+            value: ";",
+            lineNumber: 0,
+            columnNumber: 0,
+          }
+        ]],
+        ["Newline", "\n", [
+          {
+            type: TydTokenType.StatementTerminator,
+            value: "\n",
+            lineNumber: 0,
+            columnNumber: 0,
+          }
+        ]]
+      ];
+
       test("Semi-colon", () => {
         const lexer = new TydLexer(";");
 
@@ -176,15 +195,7 @@ describe("Valid Cases", () => {
             columnNumber: 0,
           }
         ]],
-        ["Newline", "\n", [
-          {
-            type: TydTokenType.EOF,
-            value: "",
-            lineNumber: 1,
-            columnNumber: 0,
-          }
-        ]],
-        ["Newlines, Tab, Spaces", "\n\t \n", [
+        ["Tab, Spaces", "\t ", [
           {
             type: TydTokenType.EOF,
             value: "",

@@ -173,9 +173,11 @@ export default class TydLexer implements ITydLexer {
       const stringValue = this.#readUntil((character) => character !== '"');
 
       return this.#createToken(TydTokenType.String, stringValue);
+    case "\n":
+      // Tyd says treat \n as whitespace but that is impossible to correctly implement
+      return this.#createToken(TydTokenType.StatementTerminator, nextCharacter);
     case " ":
     case "\t":
-    case "\n":
       this.#skipWhitespace();
       return this.getNextToken();
     default:
