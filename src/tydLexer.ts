@@ -11,29 +11,6 @@ const EOF = "EOF";
 const RECORD_REGEX = /[a-zA-Z0-9_]/;
 const SPECIAL_STARTING_CHARS = ["-", "*", "\\"];
 
-const escapeCharacter = (string: string): string => {
-  switch (string) {
-  case "#":
-  case ";":
-  case "{":
-  case "}":
-  case "[":
-  case "]":
-  case '"':
-    return string;
-  case "n":
-    return "\n";
-  case "r":
-    return "\r";
-  case "t":
-    return "\t";
-  case "\\":
-    return "\\";
-  default:
-    throw new LexerError(`Unexpected escape character ${string}`);
-  }
-};
-
 export default class TydLexer implements ITydLexer {
   #contents: string;
 
@@ -51,6 +28,29 @@ export default class TydLexer implements ITydLexer {
     this.#parsingColumnNumber = 0;
   }
 
+  #escapeCharacter = (string: string): string => {
+    switch (string) {
+    case "#":
+    case ";":
+    case "{":
+    case "}":
+    case "[":
+    case "]":
+    case '"':
+      return string;
+    case "n":
+      return "\n";
+    case "r":
+      return "\r";
+    case "t":
+      return "\t";
+    case "\\":
+      return "\\";
+    default:
+      throw new LexerError(`Unexpected escape character ${string} @ ${this.#parsingLineNumber}:${this.#parsingColumnNumber}`);
+    }
+  };
+
   #readUntil(predicate: (character: string) => boolean): string {
     let nextCharacter = this.#stepForward();
     let result = "";
@@ -63,7 +63,7 @@ export default class TydLexer implements ITydLexer {
       }
 
       if (escaped) {
-        result += escapeCharacter(nextCharacter);
+        result += this.#escapeCharacter(nextCharacter);
         escaped = false;
         nextCharacter = this.#stepForward();
       } else if (nextCharacter === "\\") {
@@ -194,6 +194,36 @@ export default class TydLexer implements ITydLexer {
         }, column ${this.#parsingColumnNumber}`,
       );
     }
+  }
+
+  getNextStatement(): TydToken[] {
+    const tokens: TydToken[] = [];
+
+    let currentToken = this.getNextToken();
+
+    while (
+      currentToken.type !== TydTokenType.StatementTerminator &&
+        currentToken.type !== TydTokenType.EOF
+    ) {
+      tokens.push(currentToken);
+      currentToken = this.getNextToken();
+    }
+
+    return tokens;
+  }
+
+  peek(): TydToken {
+    const currentCharacterIndex = this.#characterIndex;
+    const currentParsingLineNumber = this.#parsingLineNumber;
+    const currentParsingColumnNumber = this.#parsingColumnNumber;
+
+    const token = this.getNextToken();
+
+    this.#characterIndex = currentCharacterIndex;
+    this.#parsingLineNumber = currentParsingLineNumber;
+    this.#parsingColumnNumber = currentParsingColumnNumber;
+
+    return token;
   }
 
   *getTokens(): Generator<TydToken> {
